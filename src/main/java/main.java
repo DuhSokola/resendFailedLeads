@@ -49,7 +49,8 @@ public class main {
 
             // our SQL SELECT query.
             // if you only need a few columns, specify them by name instead of using "*"
-            String query = "SELECT * FROM lead WHERE campaign LIKE 'autosalon_2016_ipad' AND sent = 1";
+            String query = "SELECT * FROM lead WHERE campaign LIKE 'autosalon_2016_ipad' AND sent = 1 AND created LIKE '2016%'";
+            //String query = "SELECT * FROM lead WHERE campaign LIKE 'autosalon_genf_2016_ipad' AND sent = 1 AND created LIKE '2016%' AND surname LIKE 'Bankole' AND name LIKE 'Yomi' AND language LIKE 'en'";
 
             // create the java statement
             Statement st = conn.createStatement();
@@ -57,21 +58,22 @@ public class main {
             // execute the query, and get a java resultset
             ResultSet rs = st.executeQuery(query);
 
-            int m = 0;
             // iterate through the java resultset
             while (rs.next())
             {
-                if(m==0) {
 
+                    PreparedStatement updateEXP = conn.prepareStatement("UPDATE lead SET campaign='autosalon_genf_2016_ipad' WHERE id='"+rs.getString("id")+"';");
+                    int isUpdated = updateEXP.executeUpdate();
+                    System.out.println(isUpdated);
 
                     System.out.println(rs.getString("name"));
                     System.out.println(rs.getString("surname"));
 
                     // Prepare the HTTP connection
                     // If authentication is enabled, also add the authentication information
-                    HttpHost target = new HttpHost("qa1100ap601.amag.car.web", 50000, "http");
+                    //HttpHost target = new HttpHost("qa1100ap601.amag.car.web", 50000, "http");
 
-                    //HttpHost target = new HttpHost("pr1100ap601.amag.car.web", 50000, "http");
+                    HttpHost target = new HttpHost("pr1100ap601.amag.car.web", 50000, "http");
                     CloseableHttpClient httpClient;
 
                     // Set Timeout
@@ -102,8 +104,8 @@ public class main {
                     HttpClientContext localContext = HttpClientContext.create();
                     localContext.setAuthCache(authCache);
 
-                    HttpPost httpPost = new HttpPost("http://qa1100ap601.amag.car.web:50000/HttpAdapter/HttpMessageServlet?interfaceNamespace=http://amag.ch/web/CustomerData/V1.0&interface=CustomerDataNAW_OA&senderService=BS_WEB_Q&senderParty=&qos=EO&j_username=WEBTECH&j_password=Abcd1234");
-                  //HttpPost httpPost = new HttpPost("http://pr1100ap601.amag.car.web:50000/HttpAdapter/HttpMessageServlet?interfaceNamespace=http://amag.ch/web/CustomerData/V1.0&interface=CustomerDataNAW_OA&senderService=BS_WEB_P&senderParty=&qos=EO&j_username=WEBTECH&j_password=Abcd1234");
+                    //HttpPost httpPost = new HttpPost("http://qa1100ap601.amag.car.web:50000/HttpAdapter/HttpMessageServlet?interfaceNamespace=http://amag.ch/web/CustomerData/V1.0&interface=CustomerDataNAW_OA&senderService=BS_WEB_Q&senderParty=&qos=EO&j_username=WEBTECH&j_password=Abcd1234");
+                  HttpPost httpPost = new HttpPost("http://pr1100ap601.amag.car.web:50000/HttpAdapter/HttpMessageServlet?interfaceNamespace=http://amag.ch/web/CustomerData/V1.0&interface=CustomerDataNAW_OA&senderService=BS_WEB_P&senderParty=&qos=EO&j_username=WEBTECH&j_password=Abcd1234");
                     httpPost.setHeader(HttpHeaders.CONTENT_TYPE, "application/octet-stream"); // PI requires this format in order to process the values
 
                     // Initialize the parameter container and assign the values to it
@@ -199,8 +201,8 @@ public class main {
                         System.out.println();
                         response.close();
                     }
-                }
-                m++;
+
+
             }
             st.close();
         }
